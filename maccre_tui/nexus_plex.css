@@ -1,0 +1,1211 @@
+/* nexus_plex.css — Nexus_Plex v2 Split-Pane Architecture */
+
+/* ── Global ──────────────────────────────────────────────────────────────── */
+Screen {
+    background: #0d1117;
+}
+
+Header {
+    background: #161b22;
+    color: #58a6ff;
+    text-style: bold;
+}
+
+Footer {
+    background: #161b22;
+}
+
+.pane-title {
+    color: #58a6ff;
+    text-style: bold;
+    padding: 1;
+    background: #161b22;
+    width: 100%;
+    content-align: center middle;
+    border-bottom: solid #30363d;
+}
+
+.ribbon-label {
+    color: #58a6ff;
+    text-style: bold;
+    padding: 1;
+    background: #161b22;
+    width: auto;
+    content-align: center middle;
+}
+
+
+/* ── Layout ──────────────────────────────────────────────────────────────── */
+#main-layout {
+    height: 1fr;
+}
+
+#left-pane {
+    width: 35%;
+    height: 1fr;
+    border-right: thick #30363d;
+    background: #0d1117;
+}
+
+/* ── Flow Monitor Overlay (replaces InformationPanel during execution) ──── */
+
+FlowMonitorOverlay {
+    height: 1fr;
+    border: solid #58a6ff;
+    background: #0d1117;
+    padding: 0 1;
+}
+
+FlowMonitorOverlay RichLog {
+    background: #0d1117;
+    border: solid #30363d;
+    scrollbar-color: #30363d;
+    scrollbar-color-hover: #58a6ff;
+}
+
+FlowMonitorOverlay ProgressBar {
+    padding: 0 1;
+}
+
+MacroNodeBuilderPanel {
+    width: 100%;
+    height: 1fr;
+    padding: 1;
+    overflow-y: scroll;
+}
+
+#right-pane {
+    width: 65%;
+    height: 1fr;
+    background: #0d1117;
+}
+
+/* ── Left Pane: Nexus Chat ───────────────────────────────────────────────── */
+NexusChat {
+    width: 100%;
+    height: 14;
+    dock: bottom;
+    transition: height 300ms in_out_cubic;
+    border-top: solid #30363d;
+}
+
+NexusChat.-expanded {
+    height: 50%;
+}
+
+#nexus-log {
+    height: 1fr;
+    background: #0d1117;
+    padding: 0 1;
+    overflow-y: scroll;
+}
+
+#nexus-input-container {
+    height: 4;
+    width: 100%;
+    layout: horizontal;
+    padding: 0 1;
+}
+
+.nexus-tab-btn {
+    width: auto;
+    height: 3;
+    margin-right: 1;
+}
+
+#btn-paste-nexus {
+    width: auto;
+    height: 3;
+    margin-right: 1;
+}
+
+#btn-expand-nexus-input, #btn-expand-agent-chat-input {
+    min-width: 3;
+    width: 3;
+    height: 3;
+    margin: 0;
+    padding: 0;
+    content-align: center middle;
+    border: none;
+    background: transparent;
+    color: #d29922;
+    text-style: bold;
+}
+
+#btn-expand-nexus-input:hover, #btn-expand-agent-chat-input:hover {
+    color: #e3b341;
+}
+
+#nexus-input, #agent-chat-input {
+    width: 1fr;
+    height: 4;
+    border: tall #30363d;
+    background: #0d1117;
+    margin-right: 1;
+    transition: height 200ms in_out_cubic;
+}
+
+#nexus-input:focus, #agent-chat-input:focus {
+    min-width: 14;
+    height: 3;
+    margin: 0;
+    border: none;
+}
+
+#btn-nexus-send, #btn-agent-chat-send {
+    min-width: 14;
+    height: 3;
+    margin: 0;
+    border: none;
+}
+
+/* ── Header Layout ──────────────────────────────────────────────────────────────── */
+#custom-header {
+    width: 100%;
+    height: 3;
+    background: #161b22;
+    border-bottom: solid #30363d;
+    align: left middle;
+    padding: 0;
+}
+
+#header-left {
+    width: 35%;
+    height: 100%;
+    align: center middle;
+}
+
+#header-center {
+    width: 65%;
+    height: 100%;
+    align: center middle;
+}
+
+#header-left Button, #header-center Button {
+    margin-right: 1;
+    min-width: 10;
+}
+
+#btn-select-project-dropdown {
+    width: 28;
+    margin-right: 1;
+}
+
+#finops-buddy {
+    width: auto;
+    content-align: center middle;
+    margin-right: 2;
+}
+
+TopologyTracker {
+    width: 1fr;
+    height: 100%;
+    align-vertical: middle;
+    padding: 0 1;
+}
+
+#topo-status {
+    color: #8b949e;
+    content-align: left middle;
+}
+
+#active-project-label {
+    padding: 0 2;
+    color: #58a6ff;
+    text-style: bold;
+}
+
+/* ── Right Pane: Agent Manager Container ─────────────────────────────────── */
+#agent-manager {
+    height: 1fr;
+    layout: horizontal;
+}
+
+AgentBuilderPanel {
+    width: 30%;
+    height: 1fr;
+    border-right: solid #30363d;
+    padding: 1;
+    overflow-y: auto;
+}
+
+AgentChatPanel {
+    width: 60%;
+    height: 1fr;
+    padding: 1;
+    overflow-y: auto;
+}
+
+AgentBuilderPanel Input, AgentBuilderPanel Select {
+    margin-bottom: 1;
+}
+
+AgentBuilderPanel Label {
+    color: #c9d1d9;
+}
+
+.top-edit-btn {
+    width: 100%;
+    margin-bottom: 1;
+}
+
+.form-row {
+    layout: horizontal;
+    height: auto;
+    margin-bottom: 1;
+    align-vertical: middle;
+}
+
+.form-row Label {
+    width: 1fr;
+    content-align: left middle;
+}
+
+.form-row Switch {
+    width: auto;
+}
+
+.form-row Input {
+    width: 10;
+    margin-bottom: 0;
+}
+
+.form-group-title {
+    color: #8b949e;
+    text-style: bold;
+    margin-top: 1;
+    border-bottom: solid #30363d;
+    width: 100%;
+}
+
+.agent-chat-controls {
+    height: auto;
+    margin-bottom: 1;
+    layout: horizontal;
+    align-vertical: middle;
+}
+
+.agent-chat-controls Button, .agent-chat-controls Select {
+    margin-right: 1;
+}
+
+#active-agent-roster {
+    height: auto;
+    min-height: 3;
+    border: solid #30363d;
+    background: #0d1117;
+    margin-bottom: 1;
+    layout: horizontal;
+    padding: 1;
+    overflow-x: auto;
+}
+
+.agent-pill {
+    width: auto;
+    background: #1f6feb;
+    color: white;
+    padding: 0 1;
+    margin-right: 1;
+    content-align: center middle;
+    text-style: bold;
+}
+
+/* ── Modals ──────────────────────────────────────────────────────────────── */
+NewProjectModal, SelectProjectModal, SystemInstructionsModal {
+    align: center middle;
+}
+
+ContextInjectModalScreen {
+    align: center middle;
+}
+
+#hitl-split-layout {
+    width: 90%;
+    height: 90%;
+    background: #0d1117;
+    border: thick #30363d;
+}
+
+#hitl-left-pane {
+    width: 40%;
+    height: 1fr;
+    padding: 1 2;
+    border-right: solid #30363d;
+}
+
+#hitl-right-pane {
+    width: 60%;
+    height: 1fr;
+    padding: 1 2;
+}
+
+#context-text-area {
+    height: 1fr;
+    margin-bottom: 1;
+}
+
+#hitl-payload-log {
+    height: 1fr;
+    border: solid #30363d;
+}
+
+SystemInstructionsModal .dialog {
+    width: 80%;
+    height: 80%;
+}
+
+SystemInstructionsModal TextArea {
+    height: 1fr;
+    margin-bottom: 1;
+}
+
+ModalScreen {
+    align: center middle;
+}
+
+.dialog {
+    padding: 1 2;
+    background: #161b22;
+    border: thick #30363d;
+    width: auto;
+    max-width: 80;
+    height: auto;
+}
+
+.dialog Label {
+    margin-bottom: 1;
+    color: #e6edf3;
+    text-style: bold;
+}
+
+.dialog Input, .dialog Select {
+    margin-bottom: 1;
+    width: 100%;
+}
+
+.dialog-buttons {
+    margin-top: 1;
+    layout: horizontal;
+    align: right middle;
+}
+
+.dialog-buttons Button {
+    margin-left: 1;
+}
+
+.agent-chat-dialog {
+    width: 90%;
+    height: 90%;
+    max-width: 140;
+}
+.chat-config-row {
+    height: 15;
+    margin-bottom: 1;
+}
+.agent-selector-pane {
+    width: 50%;
+    height: 100%;
+}
+.mode-selector-pane {
+    width: 50%;
+    height: 100%;
+    padding-left: 2;
+}
+#agent-chat-log {
+    height: 1fr;
+    background: #0d1117;
+    border: solid #30363d;
+    margin-bottom: 1;
+}
+#agent-chat-input-container {
+    height: 5;
+    width: 1fr;
+    layout: horizontal;
+    background: #21262d;
+    border-top: solid #30363d;
+}
+#agent-selection-list {
+    height: 1fr;
+    border: solid #30363d;
+}
+.chat-buttons {
+    margin-top: 1;
+}
+
+/* ── 3-Panel Agent Studio Chat ───────────────────────────────────────────── */
+
+AgentStudioChatScreen {
+    align: center middle;
+    width: 100%;
+    height: 100%;
+}
+
+#studio-chat-layout {
+    width: 100%;
+    height: 100%;
+    layout: horizontal;
+    background: $background;
+}
+
+ChatDashboardPane {
+    width: 30%;
+    height: 100%;
+    border-right: solid #30363d;
+    padding: 1;
+    overflow-y: auto;
+}
+
+ChatBuilderPane {
+    width: 30%;
+    height: 100%;
+    border-left: solid #30363d;
+    padding: 1;
+    overflow-y: auto;
+}
+
+ChatArenaPane {
+    width: 1fr;
+    height: 100%;
+    padding: 1;
+    layout: vertical;
+}
+
+#chat-arena-header {
+    height: 3;
+    layout: horizontal;
+    margin-bottom: 1;
+}
+
+#chat-rename-input {
+    width: 1fr;
+    margin-right: 1;
+}
+
+#chat-finops-readout {
+    width: auto;
+    content-align: right middle;
+    padding: 0 1;
+    color: #3fb950;
+    text-style: bold;
+}
+
+#chat-arena-log {
+    height: 1fr;
+    background: #0d1117;
+    border: solid #30363d;
+    margin-bottom: 1;
+}
+
+#chat-arena-footer {
+    height: auto;
+    layout: vertical;
+}
+
+#chat-arena-input {
+    height: 3;
+}
+
+#chat-arena-input.-expanded {
+    height: 10;
+}
+
+.chat-arena-controls {
+    height: auto;
+    layout: horizontal;
+    margin-top: 1;
+    margin-bottom: 1;
+}
+
+#chat-notebook-list {
+    height: 10;
+    border: solid #30363d;
+}
+
+ChatBuilderPane Input, ChatBuilderPane Select, ChatDashboardPane Select {
+    margin-bottom: 1;
+}
+
+ChatBuilderPane Label, ChatDashboardPane Label {
+    color: #c9d1d9;
+    margin-bottom: 1;
+}
+
+#studio-select-agents, #studio-configure-agent {
+    height: 10;
+    margin-bottom: 1;
+    border: solid #30363d;
+}
+
+#studio-history-list {
+    height: 1fr;
+    border: solid #30363d;
+    margin-bottom: 1;
+}
+
+/* ── Buttons global ───────────────────────────────────────────────────────── */
+Button.-success {
+    background: #238636;
+    color: #ffffff;
+}
+
+Button.-success:hover {
+    background: #2ea043;
+}
+
+Button.-error {
+    background: #da3633;
+    color: #ffffff;
+}
+
+Button.-error:hover {
+    background: #f85149;
+}
+
+Button.-primary {
+    background: #1f6feb;
+    color: #ffffff;
+}
+
+Button.-primary:hover {
+    background: #388bfd;
+}
+
+Button.-warning {
+    background: #d29922;
+    color: #ffffff;
+}
+
+Button.-warning:hover {
+    background: #e3b341;
+}
+
+Button.-default {
+    background: #21262d;
+    color: #c9d1d9;
+    border: tall #30363d;
+}
+
+Button.-default:hover {
+    background: #30363d;
+}
+
+/* ── MacroNodeWorkshop (replaces FlowExecutionPanel) ─────────────────────── */
+
+MacroNodeWorkshop {
+    width: 1fr;
+    height: 1fr;
+    padding: 0 1;
+    overflow-y: auto;
+}
+
+/* ── NodeCatalog integration ─────────────────────────────────────────────── */
+
+NodeCatalog {
+    height: auto;
+    border: solid #30363d;
+    background: #0d1117;
+    margin-bottom: 1;
+}
+
+NodeCatalog TabbedContent {
+    height: 14;
+}
+
+NodeCatalog ContentSwitcher {
+    height: 10;
+}
+
+NodeCatalog TabPane {
+    height: 10;
+}
+
+NodeCatalog .catalog-row {
+    height: 3;
+    layout: horizontal;
+}
+
+NodeCatalog .catalog-row Select {
+    width: 80%;
+}
+
+NodeCatalog .catalog-row Button {
+    width: 18%;
+    min-width: 8;
+}
+
+/* ── TopologyVisualizer integration ──────────────────────────────────────── */
+
+TopologyVisualizer {
+    height: auto;
+    min-height: 8;
+    border: solid #30363d;
+    background: #0d1117;
+    margin-bottom: 1;
+}
+
+TopologyVisualizer Tree {
+    height: 8;
+    scrollbar-color: #30363d;
+    scrollbar-color-hover: #58a6ff;
+}
+
+#flow-execution-top {
+    height: auto;
+    padding: 0;
+}
+
+#flow-execution-top .flow-controls {
+    height: auto;
+    padding: 0 1;
+}
+
+#flow-execution-top .flow-controls Button {
+    margin: 0 1 0 0;
+}
+
+#active-flow-sequence {
+    width: 1fr;
+    height: 10;
+    padding: 1 1;
+    color: #58a6ff;
+    overflow-x: scroll;
+    border: solid #30363d;
+    background: #0d1117;
+}
+
+.flow-arrow-dim {
+    width: auto;
+    color: #8b949e;
+    padding: 1 1;
+}
+
+.active-node-btn {
+    margin: 0 1;
+    min-width: 10;
+}
+#flow-monitor-section {
+    height: 40;
+    padding: 0;
+}
+
+#flow-monitor-header-row, #nexus-header-row {
+    height: auto;
+    layout: horizontal;
+    align-vertical: middle;
+}
+
+#flow-monitor-header-row .pane-title, #nexus-header-row .pane-title {
+    width: 1fr;
+}
+
+#btn-copy-monitor, #btn-copy-nexus {
+    height: 1;
+    min-width: 10;
+    margin: 0;
+    border: none;
+    padding: 0 1;
+}
+
+#flow-execution-log {
+    height: 1fr;
+    background: #0d1117;
+    border: solid #30363d;
+    scrollbar-color: #30363d;
+    scrollbar-color-hover: #58a6ff;
+    padding: 0 1;
+}
+
+#fe-input {
+    width: 1fr;
+    margin: 0;
+}
+
+/* ── Flow Line Visualization ─────────────────────────────────────────────── */
+
+#flow-line-section {
+    height: auto;
+    min-height: 5;
+    max-height: 10;
+    padding: 1;
+    border: solid #30363d;
+    overflow-x: auto;
+}
+
+#flow-line-content {
+    height: auto;
+    width: auto;
+    align: center middle;
+}
+
+.flow-node-box {
+    border: round #58a6ff;
+    color: #58a6ff;
+    padding: 0 1;
+    min-width: 12;
+    content-align: center middle;
+    text-style: bold;
+}
+
+.flow-node-box-agent {
+    border: round #3fb950;
+    color: #3fb950;
+    padding: 0 1;
+    min-width: 12;
+    content-align: center middle;
+    text-style: bold;
+}
+
+.flow-arrow {
+    color: #8b949e;
+    width: auto;
+    content-align: center middle;
+}
+
+.flow-node-wrapper {
+    width: auto;
+    height: auto;
+    align: center middle;
+    margin: 0 1;
+}
+
+.flow-node-top {
+    width: 100%;
+    height: 1;
+    align: center top;
+}
+
+.flow-node-bottom {
+    width: auto;
+    height: 3;
+    align: center middle;
+}
+
+.flow-move-btn {
+    min-width: 3;
+    width: 3;
+    height: 3;
+    border: none;
+    background: transparent;
+    color: #d29922;
+    margin: 0;
+    padding: 0;
+    content-align: center middle;
+}
+
+.flow-move-btn:hover {
+    color: #e3b341;
+    background: #21262d;
+}
+
+.flow-del-btn {
+    min-width: 3;
+    width: 3;
+    height: 1;
+    border: none;
+    background: transparent;
+    color: #da3633;
+    margin: 0;
+    padding: 0;
+    content-align: center middle;
+}
+
+.flow-del-btn:hover {
+    background: #da3633;
+    color: #ffffff;
+}
+
+/* ── Flow Editor Modal ───────────────────────────────────────────────────── */
+
+#flow-editor-outer {
+    width: 90%;
+    height: 85%;
+    background: #0d1117;
+    border: thick #30363d;
+    padding: 1 2;
+}
+
+#flow-editor-title {
+    color: #58a6ff;
+    text-style: bold;
+    content-align: center middle;
+    width: 100%;
+    padding: 0 0 1 0;
+}
+
+
+#triple-index-box, #studio-triple-index-box {
+    height: auto;
+    min-height: 20;
+    border: round $primary;
+    padding: 1 2;
+    margin-bottom: 1;
+}
+
+#memories-index-box, #studio-memories-index-box {
+    height: auto;
+}
+
+#search-info-panel, #studio-search-info-panel {
+    height: auto;
+    min-height: 4;
+    max-height: 10;
+    border: solid $panel;
+    background: $surface;
+}
+
+
+
+
+.info-panel-body {
+    height: 1fr;
+    overflow-y: auto;
+}
+
+#flow-editor-buttons {
+    height: auto;
+    padding: 1 0 0 0;
+    align: right middle;
+}
+
+#flow-editor-buttons Button {
+    margin: 0 0 0 1;
+}
+
+/* ── Create Payload Modal ────────────────────────────────────────────────── */
+
+#payload-modal-outer {
+    width: 70%;
+    height: 70%;
+    background: #0d1117;
+    border: thick #30363d;
+    padding: 1 2;
+}
+
+#payload-modal-title {
+    color: #58a6ff;
+    text-style: bold;
+    content-align: center middle;
+    width: 100%;
+    padding: 0 0 1 0;
+}
+
+.payload-toggle-row {
+    height: auto;
+    padding: 1 0 0 0;
+    align: left middle;
+}
+
+.payload-toggle-label {
+    padding: 0 0 0 1;
+    color: #c9d1d9;
+}
+
+#payload-text-area {
+    height: 10;
+    border: solid #30363d;
+}
+
+#payload-file-input {
+    margin: 0 0 0 0;
+}
+
+.payload-btn-row {
+    height: auto;
+    padding: 0 0 1 0;
+}
+
+#payload-modal-buttons {
+    height: auto;
+    padding: 1 0 0 0;
+    align: right middle;
+    dock: bottom;
+}
+
+#payload-modal-buttons Button {
+    margin: 0 0 0 1;
+}
+
+/* ── VCR Transport Controls ─────────────────────────────────────────────── */
+
+#vcr-transport-row {
+    height: auto;
+    padding: 1 0 0 0;
+    align: left middle;
+}
+
+.vcr-btn {
+    min-width: 8;
+    height: 3;
+    margin: 0 1 0 0;
+    text-style: bold;
+    content-align: center middle;
+}
+
+.vcr-btn--idle {
+    background: #21262d;
+    color: #484f58;
+    border: solid #30363d;
+}
+
+.vcr-btn--running {
+    background: #0d4a6b;
+    color: #58d1ff;
+    border: solid #58d1ff;
+    text-style: bold;
+}
+
+.vcr-btn--paused {
+    background: #0d4a2b;
+    color: #3fb950;
+    border: solid #3fb950;
+    text-style: bold;
+}
+
+.vcr-instructions {
+    color: #8b949e;
+    padding: 0 0 0 1;
+    width: 1fr;
+    height: auto;
+}
+
+/* ── Pre-Flight Override ────────────────────────────────────────────────── */
+
+.btn-proceed-anyway {
+    margin: 1 0 0 0;
+    width: auto;
+}
+
+.hidden {
+    display: none;
+}
+
+/* ── Paused-State Flow Line ─────────────────────────────────────────────── */
+
+.flow-node-clickable {
+    background: #161b22;
+    color: #c9d1d9;
+    border: solid #484f58;
+    padding: 0 1;
+    min-width: 12;
+    height: auto;
+    content-align: center middle;
+}
+
+.flow-node-clickable:hover {
+    background: #21262d;
+    border: solid #58a6ff;
+    color: #58a6ff;
+}
+
+.flow-node-selected {
+    background: #0d4a6b;
+    border: solid #58d1ff;
+    color: #58d1ff;
+    text-style: bold;
+}
+
+.flow-arrow-paused {
+    color: #f0883e;
+    text-style: bold;
+    padding: 0 1;
+    content-align: center middle;
+}
+
+.flow-arrow-paused:hover {
+    color: #ffa657;
+    text-style: bold underline;
+}
+
+.flow-arrow-dim {
+    color: #30363d;
+    padding: 0 1;
+}
+
+.radio-dot {
+    color: #484f58;
+    padding: 0;
+    min-width: 1;
+}
+
+.radio-dot-active {
+    color: #3fb950;
+    text-style: bold;
+}
+
+.btn-live-chat {
+    margin: 0 0 0 1;
+    min-width: 16;
+}
+
+/* ── Live Chat Modal ────────────────────────────────────────────────────── */
+
+#live-chat-modal {
+    width: 80%;
+    height: 85%;
+    background: #0d1117;
+    border: thick #30363d;
+    padding: 1 2;
+}
+
+#staged-payload-display {
+    background: #161b22;
+    border: solid #21262d;
+    padding: 1;
+    height: 6;
+    overflow-y: auto;
+    margin: 0 0 1 0;
+}
+
+#live-chat-log {
+    height: 1fr;
+    border: solid #30363d;
+    background: #0d1117;
+    margin: 0 0 1 0;
+}
+
+#live-chat-input {
+    height: 4;
+    border: solid #30363d;
+}
+
+#live-chat-buttons {
+    height: auto;
+    padding: 1 0 0 0;
+    align: right middle;
+}
+
+#live-chat-buttons Button {
+    margin: 0 0 0 1;
+}
+
+/* ── Flow History Modal ──────────────────────────────────────────────────── */
+
+#flow-history-dialog {
+    width: 100;
+    max-width: 110;
+    min-height: 20;
+    max-height: 40;
+    padding: 1 2;
+    background: #0d1117;
+    border: thick #1f6feb;
+}
+
+#context-inject-dialog {
+    width: 90%;
+    height: 90%;
+    padding: 1 2;
+    background: #0d1117;
+    border: thick #1f6feb;
+}
+
+#hitl-ledger-content {
+    height: 1fr;
+    border: round #30363d;
+    background: #161b22;
+    margin-bottom: 1;
+}
+
+#hitl-header-row {
+    height: auto;
+    margin-bottom: 1;
+    align: left middle;
+}
+
+#flow-history-title {
+    text-style: bold;
+    color: #58a6ff;
+    margin-bottom: 1;
+}
+
+.flow-history-label {
+    color: #8b949e;
+    margin-bottom: 0;
+}
+
+#fh-project-select {
+    margin-bottom: 1;
+    width: 100%;
+}
+
+#fh-session-table {
+    height: 12;
+    max-height: 20;
+    margin-bottom: 1;
+    background: #161b22;
+    scrollbar-size: 1 1;
+}
+
+#fh-session-table > .datatable--cursor {
+    background: #1f6feb40;
+}
+
+#fh-load-btn {
+    margin-left: 1;
+}
+
+#fh-canonize-btn {
+    margin-left: 1;
+}
+
+/* ── Flow Selection Row (New UI) ─────────────────────────────────────────── */
+#flow-select-row {
+    height: auto;
+    margin-bottom: 1;
+    padding: 1;
+    layout: horizontal;
+}
+
+.flow-select-group {
+    width: 1fr;
+    height: auto;
+    margin-right: 1;
+    layout: vertical;
+}
+
+.info-panel-container {
+    height: 20;
+    border: round #30363d;
+    padding: 1;
+    overflow-y: auto;
+    margin-top: 1;
+}
+
+.info-panel-title {
+    color: #8b949e;
+    text-style: bold;
+    margin-bottom: 1;
+}
+
+.info-panel-body {
+    color: #c9d1d9;
+    height: auto;
+}
+
+.flow-add-btn {
+    width: 100%;
+    margin-top: 1;
+}
+
+#flow-line-actions {
+    height: auto;
+    margin-top: 1;
+    margin-bottom: 1;
+}
+
+#main-name-session-input {
+    width: 28;
+}
+
+.flow-arrow-gold {
+    min-width: 3;
+    width: 3;
+    height: 1;
+    color: gold;
+    border: none;
+    background: transparent;
+}
+
+.flow-arrow-gold:hover {
+    color: yellow;
+    text-style: bold;
+}
