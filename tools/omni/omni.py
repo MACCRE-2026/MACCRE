@@ -27,10 +27,10 @@ def get_project_name():
     return Path(os.getcwd()).name
 
 def get_entry_point():
-    for candidate in["main.py", "app.py", "run.py", f"{get_project_name()}.py"]:
+    for candidate in ["maccre.py", "run.py", "main.py", "app.py", f"{get_project_name()}.py"]:
         if os.path.exists(candidate):
             return candidate
-    logging.error("No entry point found (main.py, app.py, run.py). Cannot proceed.")
+    logging.error("No entry point found (maccre.py, run.py, main.py, app.py). Cannot proceed.")
     sys.exit(1)
 
 def resolve_python_engine():

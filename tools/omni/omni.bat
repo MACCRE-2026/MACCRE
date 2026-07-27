@@ -1,2 +1,2 @@
 @echo off
-python C:\OmniBuilder\omni.py %*
+python "%~dp0omni.py" %*

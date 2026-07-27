@@ -1,5 +1,5 @@
 # MACCREv2 Operator Manual
-**Revision:** 2026-07-21 · Law Rev 19.0
+**Revision:** 2026-07-25 · Law Rev 19.0 Compliance
 
 ---
 
@@ -17,88 +17,153 @@ MACCRE was built from my own inclinations and filtered through the different age
 
 ## Part I — Core Architectural Concepts
 
-### What MACCRE Is
-MACCREv2 (Google Antigravity for Sovereign Edge) is an advanced multi-agent orchestration engine and TUI command center. 
+### 1. System Vision & The "Do What You Feel" Agent Philosophy
+MACCREv2 (Google Antigravity for Sovereign Edge) is an advanced multi-agent orchestration engine and TUI command center designed around deterministic scaffolding governing non-deterministic AI agents.
 
-**Current System State:** The system is partially functional and heavily opinionated. It is designed around deterministic orchestration of non-deterministic agents, ensuring rigid data flow while allowing maximum cognitive freedom within the agent nodes.
-
-### 1. The "Do What You Feel" Agent Philosophy
-The bundled agents in this release were created using the `Prompt Engineer` in Chat Studio sessions. The `Prompt Engineer` serves as the progenitor of all bundled agent instructions.
-Rather than using standard industry practices (concise instructions at low temperatures), MACCRE leans into a "do what you feel" ethos. Instructions are dense, structured, and complex, and agents are run at high temperatures (`1.0` and above). This induces emergent behaviors (as seen in `GretchenHarwell`) and highly effective autonomous reasoning (as seen in `OSINT_Analyst`). The myriad of configuration options exist specifically to support this high-entropy approach while the physical architecture acts as the guardrails.
+The bundled agents in this release were created using the `Prompt Engineer` in Chat Studio sessions. Rather than using standard industry practices (concise instructions at low temperatures), MACCRE leans into a "do what you feel" ethos. Instructions are dense, structured, and complex, and agents are run at high temperatures (`1.0` and above) to induce emergent reasoning, backed by rigid physical guardrails.
 
 ### 2. The 5-Tier Datacenter & Path Anchoring
-All operations are strictly anchored to a globally portable project root. The `maccre_core/utils/path_resolver.py` dynamically resolves the absolute path, ensuring zero-configuration portability.
-Data is federated into a strict 5-tier silo architecture per project (defaulting to `__DATACENTER\GLOBAL\`):
-- **`01_Raw_Source`**: Ingestion zone for raw documents and payloads.
-- **`02_Dynamic_Context`**: Project topologies, state dictionaries, and encrypted vault storage (`auth_vault.bin`).
-- **`03_Agent_Ledgers`**: Cognitive audits, tool-call telemetry, and serialized execution JSONs.
-- **`04_Code_Artifacts`**: Agent-generated outputs, structured schemas, and unified chat ledgers.
-- **`05_Rendered_Media`**: Rendered audio/video downstream outputs.
+All file paths are dynamically resolved at runtime via `get_maccre_root()` in `maccre_core/utils/path_resolver.py`, guaranteeing zero-configuration multi-drive and multi-OS portability.
 
-### 3. Sovereign Auth Layer (Federated Vault)
+Workspace data is partitioned across five deterministic datacenter silos inside `__DATACENTER/<projectName>/`:
+- **`01_Raw_Source`**: Immutable ingestion zone for raw documents, payloads, and datasets.
+- **`02_Dynamic_Context`**: Active project state machines, topologies, encrypted vault storage (`auth_vault.bin`), and session configs.
+- **`03_Agent_Ledgers`**: Cognitive JSON ledgers (`[module_name]_telemetry.json`), execution traces, and build logs.
+- **`04_Code_Artifacts`**: Sandboxed output generation zone for agent-produced Python code, markdown reports, and schemas.
+- **`05_Rendered_Media`**: Generated media outputs including TTS `.wav` audio, Imagen 3 `.png` graphics, and FFmpeg `.mp4` video.
+
+### 3. Sovereign Auth Layer & Key Ingestion
 Authentication is fully localized and headless. No `.env` files are used.
-- **Autonomous Key Ingestion** (`key_ingestor.py`): Automatically regex-fingerprints API keys and natively routes them to the correct local vault without human configuration.
-- **Universal Vault** (`universal_vault.py`): Utilizes Windows DPAPI OS integration to encrypt credentials natively into AES-128 `.bin` files stored on the local disk. 
+- **Autonomous Key Ingestion (`key_ingestor.py`)**: Automatically scans input strings and clipboard contents for vendor API key formats (Gemini, Anthropic, OpenAI, Groq, xAI, Brave), routes them to vault storage, and purges Win32 clipboard buffers (`clear_windows_clipboard()`).
+- **Federated Dual-Vault**: Utilizes native Windows DPAPI (`windows_vault.py` - `CryptProtectData`) bound to the OS user profile, with AES-128 Fernet encryption (`universal_vault.py` - `auth_vault.bin`) as cross-platform fallback.
+- **CPython RAM Key Zeroing**: Plaintext API keys in memory are overwritten post-execution via `ctypes.memset`.
 
 ### 4. Local SQLite Architecture (C-Engine Concurrency)
-MACCREv2 offloads swarm orchestration to heavily optimized, WAL-mode SQLite databases.
-- **`swarm_queue.db`**: Managed by `local_broker.py`. Handles scatter-gather state machines. Uses `UNIQUE(job_id, current_node)` and `INSERT OR IGNORE` to elegantly handle concurrent Fan-In node routing. Task races are serialized at the DB layer via `BEGIN EXCLUSIVE` locks.
+- **`swarm_queue.db`**: Managed by `local_broker.py`. Handles scatter-gather state machines in WAL mode. Employs `UNIQUE(job_id, current_node)` and `INSERT OR IGNORE` to make fan-in gather routing strictly idempotent, with `BEGIN EXCLUSIVE` locks for atomic task fetching.
 - **`thoughts.db`**: Unified matrix for storing agent cognitive scratchpads during schema-enforced inference.
 - **`agent_library.db`**: Relational store for agent profiles, personas, and assigned tool sets.
 - **`macronode_registry.db`**: Repository of nested topological clusters (MacroNodes) for modular drag-and-drop flow design.
-
-### 5. Omni CI/CD Pipeline (JIT Gatekeeper)
-Execution occurs within the **OmniBuilder CI/CD Gatekeeper** runtime. Python scripts are never executed via bare `python`.
-- `omni run <path>`: Hunts zombie processes, resolves the active Python engine, and cleanly executes.
-- `omni qa [path] [--smart]`: Natively runs Ruff and Pyright quality gates. Zero unused imports and explicit Python 3.11+ type hints are mandated.
+- **4 Telemetry Databases (`telemetry_db.py`)**: `system_logs.db` (lifecycle & hardware), `user_interactions.db` (operator audit), `terminal_logs.db` (stdio capture), and `definitions.db` (schema & topology configs).
 
 ---
 
 ## Part II — Operational Mechanics & Flow Execution
 
 ### 1. Flow Execution & Telemetry
-When a payload enters a topology, it traverses a Directed Acyclic Graph (DAG). The `LocalMessageBroker` tracks the payload's physical path on the disk, updating the SQLite state machine at each hop. Telemetry is aggressively captured at every step: cognitive reasoning, API costs, and latency are logged to JSON matrices in `03_Agent_Ledgers` and the `system_logs.db`.
+When a payload enters a topology, it traverses a Directed Acyclic Graph (DAG). `LocalMessageBroker` tracks payload hops on disk, updating `swarm_queue.db`. Telemetry (reasoning, API costs, latency) streams to `03_Agent_Ledgers` and `system_logs.db`.
 
 ### 2. Session Siloing & Canonization
-Every execution run is strictly siloed into a unique `Session ID`. A session contains its own isolated payload copies and execution history. When a session is verified as successful, the operator can **Canonize** it. Canonization locks the session from further execution, marking its outputs as verified ground-truth for future context injection.
+Execution runs are siloed into unique `Session ID`s. Upon successful completion, operators can canonize a session using the CLI (`omni run maccre.py canonize --project <id> --session <id>`), locking state and elevating memory pins to `memory_pins.db`.
 
-### 3. Semantic Memory & Memory Pins
-MACCREv2 implements semantic memory via `memory_pins.db`. Instead of dumping massive raw text into an LLM's context window, agents "pin" dense, highly relevant semantic concepts to specific nodes or sessions. This philosophy forces the system to distill knowledge down to its structural essence, retrieving it dynamically only when mathematically relevant to the current active flow.
-
-### 4. Bundled Topology: OSINT_Research_x3
-The default release includes the `OSINT_Research_x3` MacroNode. Far beyond a simple parallel scatter, this topology is an example of advanced recursive orchestration. It utilizes a `CASCADE` node executing a dual-index exclusionary search protocol (`num_passes=2`). It then pairs the `OSINT_Analyst` with a `Regular_Joe` dialogue partner for 3 conversational rounds, forcing an epistemic synthesis of the findings. This demonstrates how a natively configured, stubborn agent like the `OSINT_Analyst` produces incredible results when given a patient, deeply planned topological structure, rather than relying on zero-shot inference.
-
-### 5. MacroNodes & ControlNodes Theory
-MACCREv2 treats workflow routing as a composition of first-class primitives. 
-- **ControlNodes (`CTRL_`)**: These are the deterministic "verbs" of the system. They handle graph structure (fan-out/fan-in via `tether_ids`), flow state (pauses, conditional gates), and data transformation (cleanup, concatenation).
-- **MacroNodes**: These are pre-configured topological clusters—compositions of cognitive agents and ControlNodes wired together into a reusable, drag-and-drop module. Building a MacroNode *is* building a topology.
-
-**Architectural Nuances:**
-- **Layered Map-Reduce:** By using `CTRL_SCATTER` paired with a tethered `CTRL_MERGE`, payloads fan out to parallel, isolated `flow_line` execution threads. They process independently and then wait at the merge point until all upstream targets arrive. These can be nested infinitely (tethers inside tethers) for extreme multi-layered map-reduce patterns, synchronized entirely by the SQLite WAL-mode lock engine.
-- **Controlled Recursion on a DAG:** Directed Acyclic Graphs do not naturally loop. MACCRE simulates cyclic functions by unrolling them onto the DAG. A `CTRL_RECURSION` node combined with a `CTRL_ANCHOR` (a named topological waypoint) explicitly points execution backwards up the chain, while maintaining deterministic iteration limits to prevent infinite deadlocks.
-- **Probabilistic vs. Deterministic Bridges:** The `CTRL_GATE` (a "floating if" evaluator) and `CTRL_CONDITIONAL_ROUTE` act as the bridge between LLM probability and system determinism. The "Quadrivector Failback" allows an agent to run free-form, perform a structured extraction to grab a routing token, and fall back to regex or score thresholds if the LLM hallucinates the route structure.
+### 3. Bundled Topology: OSINT_Research_x3 MacroNode
+The default release includes `OSINT_Research_x3`, demonstrating multi-pass research, adversarial dialogue, and synthesis:
+- **Phase 1 (Dual-Pass Search)**: `OSINT_Analyst` runs `cascade_search(num_passes=2)`. Pass 1 retrieves primary web search hits; Pass 2 executes domain-exclusionary queries omitting Pass 1 domains.
+- **Phase 2 (Adversarial Dialogue)**: `DialogueRunner` executes 3 conversational rounds between `OSINT_Analyst` (expert) and `Regular_Joe` (layman evaluator) to eliminate jargon and clarify missing context.
+- **Phase 3 (Synthesis)**: `OSINT_Synth` ingests dialogue transcripts and writes an executive report to `04_Code_Artifacts/<job_id>/OSINT_Report.md`.
 
 ---
 
-## Part III — The Evolution of the Control Surface
+## Part III — TUI Navigation & Command Center Operations Manual
 
-### 1. GUI/TUI Evolution
-The system has gone through 4 major generations of visual control surfaces. The current Terminal User Interface (TUI) is the furthest evolution and directly drove major overhauls in the topology node structure.
-Historically, MACCRE relied on massive 7-9 page Microsoft Excel workbooks to template topologies. The operator would fill out the workbook and launch it via a rudimentary CLI. Today, CSV and SQLite are the absolute backbones of topology management, enabling the rich, dynamic visual environments seen in the current era.
+### 1. Launching the NexusPlex Command Center
+Launch the app via the Omni Prefix Mandate:
+```bash
+omni run maccre_tui/nexus_plex.py
+```
 
-### 2. TopologyVisualizer & Flow Trees
-The `TopologyVisualizer` renders these complex DAGs as interactive trees within the TUI.
-- **Visual State Tracking**: Nodes display pulsing animations (`●`), completions (`✓`), or failures (`✗`).
-- **MacroNode Expansion**: MacroNodes toggle their inner topological steps via `[+]/[-]` visual expansion.
-- **Tether Badges**: Scatter/gather operations display dynamic `[tether:id]` badges linking companion nodes.
+### 2. VCR Transport Control in Paused State (Step Injection & Live Node Chat)
+Execution operates in 3 transport states (`Idle` -> `Running` -> `Paused`). When execution enters **PAUSED** state (triggered manually via `⏸`, an explicit `CTRL_PAUSE` node, or a financial review gate `CTRL_REVIEW`):
+- The background worker thread (`FlowRunner`) blocks safely on a `FlowPauseEvent` lock.
+- **Radio-Dot Navigation**: Completed steps display green dots, active step displays an amber pulse, pending steps display hollow dots.
+- **Step Context Injection (`ContextInjectModalScreen`)**: Select any node along the flow line, click **Inject Context**, enter raw text or JSON, and save to `_injected_context`. Click **Resume** (`▶`) to unblock execution with the new context payload.
+- **Node Live Chat (`NodeLiveChatModal`)**: Select a paused node and click **Node Live Chat** to open an interactive conversation directly with the agent node using its exact current memory state (`thoughts.db`).
+- **Time-Travel Branching**: Select a completed step and click **Branch Flow** to roll back `flow_vector` pointers in `swarm_queue.db` and re-execute from that waypoint.
 
-### 3. Nexus Copilot
-The Nexus Copilot is a bespoke engineering subagent integrated directly into the system. It possesses native tool access, deep codebase knowledge, and an understanding of the topological structure. While it may not be perfect yet, its core purpose is to guide the operator through the staggering complexity of the system's mechanics and configuration.
+### 3. Agent Studio & Session Bridge Compiler (`AgentStudioChatScreen`)
+A 3-panel modal arena (`ChatDashboardPane`, `ChatArenaPane`, `ChatBuilderPane`) for multi-agent discussions. The **Session Bridge Compiler** in Panel 3 parses multi-agent chat transcripts and automatically compiles them into executable Flow Sequence DAG topologies.
+
+### 4. Keyboard Shortcuts Quick Reference
+| Shortcut | Context | Action |
+| :--- | :--- | :--- |
+| `Ctrl+R` | Global App | Launch Flow Execution (`action_run_flow`) |
+| `Space` | Global App | Toggle VCR Transport (Pause / Resume) |
+| `F2` / `Double-Click` | TopologyVisualizer | Open Node Configuration Editor (`MacroNodeEditorModal`) |
+| `Ctrl+E` | TopologyVisualizer | Toggle MacroNode Sub-Tree Expansion (`action_toggle_expand`) |
+| `Ctrl+Up` / `Down` | TopologyVisualizer | Re-order Selected Node in Step Chain |
+| `Ctrl+S` | Modal Screens | Save Configuration & Close Modal |
+| `Escape` | Modal Screens | Dismiss Modal / Return to Main View |
+
+### 5. Modal Dialog Screens Guide (21 Modals across 11 Modules)
+- **`macro_editor_modal.py`**: `MacroNodeEditorModal` (template step ordering, system prompts, tool bindings).
+- **`session_manager_modal.py`**: `SessionManagerModal` (session canonization & deadflow purging), `MacroNodeNameModal`.
+- **`onionbook_modal.py`**: `OnionBookModal` (token burn velocity & cost ratios), `FinOpsBuddy`.
+- **`finops_modals.py`**: `BudgetProposalModal` (HITL financial approval gate), `BudgetWarningModal`.
+- **`project_canon_modal.py`**: `ProjectCanonModal` (semantic memory pin inspection & query).
+- **`splash_screen.py`**: `BootSplashModal`, `LoadingSplashModal`.
+- **`nexus_plex.py`**: `NewProjectModal`, `SelectProjectModal`, `SystemInstructionsModal`, `ContextInjectModalScreen`, `NodeLiveChatModal`, `FlowHistoryModalScreen`.
+- **`file_cabinet_modal.py`**: `FileCabinetModalScreen` (datacenter ingestion).
 
 ---
 
-## Part IV — Hardware & The Edge
+## Part IV — Swarm Topology Engineering & Pre-Flight Validation
+
+### 1. CSV Topology Schema Reference
+Topologies are defined in `topology.csv` using 15 standard configuration columns:
+`NODE_ID`, `AGENT_NAME`, `MODEL_OVERRIDE`, `INSTRUCTION_OVERRIDE`, `TEMPERATURE`, `MAX_TURNS`, `NEXT_NODE_SUCCESS`, `NEXT_NODE_FAILURE`, `WAIT_FOR`, `DIALOGUE_PARTNER`, `DIALOGUE_ROUNDS`, `TETHER_ID`, `TOOLS_ALLOWED`, `SCATTER_TARGETS`, `FAILBACK_ROUTE`.
+
+### 2. MacroNode Expansion & Namespace Isolation
+Node IDs starting with `MACRO:` are intercepted by `macro_factory.py` and expanded into underlying sub-graphs (`cascade`, `hologram`, `chord`, `crucible`). Node IDs within the sub-graph are isolated with instance prefixes (`<MacroID>_<NodeName>`) to prevent collisions.
+
+### 3. 7-Point Pre-Flight DAG Topology Validation Protocol
+Before executing, `TopologyEngine.validate()` performs 7 automated checks:
+1. **Instruction Check**: Verifies non-empty prompt directives.
+2. **Model Validation**: Ensures valid non-blank model string.
+3. **Temperature Range Audit**: Checks values lie within $[0.0, 2.0]$.
+4. **DAG Target Resolution**: Confirms `NEXT_NODE_` targets exist or match terminal sentinels (`STOP`, `DONE`, `TERMINATE`, `FAILED`, `HUMAN_GATE`, `END`).
+5. **Wait_For Audit**: Validates dependency existence and warns if fan-in $>5$.
+6. **Circular Deadlock Detection**: Performs DFS recursion on `WAIT_FOR` nodes to catch loops.
+7. **Dialogue Partner Audit**: Confirms `DIALOGUE_PARTNER` is registered in `agent_roster.csv` when `DIALOGUE_ROUNDS > 0`.
+
+---
+
+## Part V — Tools, RAG & Media Operations Manual
+
+### 1. Document Ingestion & Semantic Memory Pinning
+Copy source documents into `01_Raw_Source/` and invoke `ingest_document()`. The system chunks text, retrieves OS Vault credentials, generates 256-dim embeddings via `gemini-embedding-001` (using standard `urllib`), and stores records in `memory_pins.db` (`SovereignPinStore`) and SQLite FTS5 tables (`BM25`).
+
+### 2. Hybrid Search Usage & Research Orchestration
+Call `execute_hybrid_synthesis(query, collection_name, extra_queries)` to execute parallel semantic vector search, SQLite FTS5 BM25 search, and live Brave web queries (`search_web` via pure `urllib`), fused via Reciprocal Rank Fusion (RRF).
+
+### 3. Dual-Pipeline Media Render Executor
+Construct a Director JSON manifest and invoke `execute_render_pipeline()`:
+- **TTS Audio**: Voice profiles map to `generateContent` Gemini REST calls, saving WAV files to `05_Rendered_Media/audio/`.
+- **Imagen 3 Graphics**: Generates image batches in `05_Rendered_Media/images/` with automatic API failover (`imagen-3.0-generate-001` -> `imagen-3.0-generate-002`).
+- **FFmpeg Stitcher**: Builds slide concat manifests and executes `ffmpeg.exe` to synthesize synchronized `.mp4` video in `05_Rendered_Media/video/`.
+
+### 4. Excel Workbook Intake & Materialization Pipeline
+Operators can define complete swarms in `MACCRE_Swarm_Request.xlsx`. Call `check_workbook_completeness()` to run pre-flight section readiness scoring and token cost estimation, then call `materialise_from_sheet()` to generate `agent_roster.json` and `topology.json`.
+
+---
+
+## Part VI — State, Security & Sovereignty Operations
+
+### 1. Step-by-Step 3-Tier Access Control & PIN Elevation
+- **Tier 1 (Read-Only Baseline)**: Default zero-prompt read access for all queries.
+- **Tier 2 (Salted SHA-256 PIN Elevation)**: Prompts operator for security PIN on non-sandboxed file modifications, verifying input via salted SHA-256 hashes.
+- **Tier 3 (MCP Token Bypass)**: Headless FastMCP agents (`maccre_mcp.py`) pass `MACCRE_ELEVATION_TOKEN` via `activate_mcp_bypass()`.
+
+### 2. Archive Trash Protocol (`trash_file()`)
+File deletions invoke `access_control.trash_file(path)`, prepending `%Y%m%dT%H%M%SZ__` timestamp prefixes and moving files to `_archive/trash/` with audit logging in `system_logs.db`.
+
+### 3. Omni CLI Command Reference
+- `omni run <script_path>` — Clears zombie processes, resolves active Python 3.11+ interpreter, and cleanly executes script.
+- `omni qa [path] [--smart]` — Runs native Ruff linter and Pyright static type checker across codebase.
+- `omni build [script_path]` — Purges temporary build caches, executes QA suite, and compiles single-file executable binaries via PyInstaller.
+- `omni clean [path]` — Eradicates `__pycache__` directories, SQLite WAL/SHM artifacts, temporary files, and zombie worker threads.
+
+---
+
+## Part VII — Hardware & The Edge
 
 ### 1. The S25 Edge Client & Local Models
-A core tenet of the MACCRE philosophy is absolute sovereignty. A major ongoing effort is the deployment of local, model-capable hardware (the "S25 Edge Client") using the NPUs in a cluster of cellphones to dynamically switch between individual models on each node of the cluster or to shard large models among them. My other major hardware goal is an M2 Pro Mac with 96GB of unified memory...  
-Currently, the system is architected to abstract local vs. remote execution seamlessly. While API routing (Gemini, Anthropic) handles the heavy lifting, the infrastructure is completely primed for edge-native models (via Ollama/llama.cpp) to take over cognitive tasks as hardware capabilities scale, ensuring the system can eventually run 100% offline and off-grid. 
+MACCREv2 abstracts local vs. remote execution seamlessly. `environment_probe.py` probes host system hardware (VRAM, CPU cores, active Ollama services). While cloud Gemini REST APIs handle heavy context windows, the engine is fully primed for air-gapped local execution (`gemma3:9b`, `llama.cpp`) to run 100% off-grid as hardware scales.

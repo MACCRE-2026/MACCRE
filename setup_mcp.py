@@ -24,7 +24,10 @@ from pathlib import Path
 
 # ── Project root is always this file's parent directory ───────────────────────
 PROJECT_ROOT = Path(__file__).resolve().parent
-VENV_PYTHON  = PROJECT_ROOT / ".venv" / "Scripts" / "python.exe"
+if platform.system() == "Windows":
+    VENV_PYTHON = PROJECT_ROOT / ".venv" / "Scripts" / "python.exe"
+else:
+    VENV_PYTHON = PROJECT_ROOT / ".venv" / "bin" / "python"
 MCP_SCRIPT   = PROJECT_ROOT / "maccre_mcp.py"
 
 # ── Locate Antigravity config directory ───────────────────────────────────────
@@ -67,7 +70,7 @@ def validate() -> list[str]:
     return errors
 
 
-def generate_config(active_project: str = "SilmLOTR") -> dict[str, object]:
+def generate_config(active_project: str = "GLOBAL") -> dict[str, object]:
     """Build the mcp_config dict using this machine's resolved paths."""
     return {
         "mcpServers": {
@@ -113,7 +116,7 @@ def main() -> None:
     print(f"  Output file : {mcp_config_path}\n")
 
     # Allow active project override
-    active_project = os.environ.get("MACCRE_ACTIVE_PROJECT", "SilmLOTR")
+    active_project = os.environ.get("MACCRE_ACTIVE_PROJECT", "GLOBAL")
     if len(sys.argv) > 1:
         active_project = sys.argv[1]
     print(f"  Active project: {active_project}\n")
