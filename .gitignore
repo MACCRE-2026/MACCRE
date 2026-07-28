@@ -1,0 +1,34 @@
+# MACCREv2 Release Git Ignore Rules
+
+# Temporary Drive / Sync Upload Folders
+.tmp.driveupload/
+.driveupload/
+
+# Temporary Text / Scratch Files
+*.txt
+*.bak
+*.tmp
+*.log
+
+# Virtual Environments
+.venv/
+venv/
+env/
+ENV/
+
+# Python Cache & Bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.ruff_cache/
+
+# SQLite WAL & SHM Sidecars (Temporary Write Logs)
+*.db-wal
+*.db-shm
+
+# IDE & OS Metadata
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
